@@ -1,4 +1,5 @@
 import 'package:admin/model/baseClass.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'Status.dart';
 
@@ -31,5 +32,14 @@ class Ticket extends BaseClass {
     this.body = m.containsKey('body') ? m['body'] : '';
     this.priority = m.containsKey('priority') ? m['priority'] : '';
     this.executorId = m.containsKey('executorId') ? m['executorId'] : '';
+  }
+
+
+  void fromJsonQueryDocumentSnapshot(QueryDocumentSnapshot m) {
+    super.fromJsonQueryDocumentSnapshot(m);
+    this.subject = m['subject'] == null ? '' : m['subject'];
+    this.body = m['body'] == null ? '' : m['body'];
+    this.priority = m['priority'] == null ? '' : m['priority'];
+    this.executorId = m['executorId'] == null ? '' : m['executorId'];
   }
 }

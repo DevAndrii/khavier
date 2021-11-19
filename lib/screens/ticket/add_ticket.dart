@@ -1,7 +1,12 @@
+import 'dart:js';
+
 import 'package:admin/constants.dart';
+import 'package:admin/model/model.dart';
+import 'package:admin/model/ticket.dart';
 import 'package:admin/screens/ticket/tickets_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../dashboard/components/header.dart';
 
@@ -32,17 +37,22 @@ class _AddTicket extends State<AddTicket> with RestorationMixin {
 
   @override
   Widget build(BuildContext context) {
+    Model model = Provider.of<Model>(context);
     // Extract the arguments from the current ModalRoute
     // settings and cast them as ScreenArguments.
-    final args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
+    dynamic args;
+    Ticket _ticket = Ticket();
+    String titleOfPage = 'Add Ticket ModalRoute';
 
-    print('Add Ticket ModalRoute');
-
-    print(args);
-    print(args.title);
-    print(args.message);
-    if (args.ticket != null) print(args.ticket);
-    if (args.ticket != null) print(args.ticket.id);
+    args = ModalRoute.of(context)!.settings.arguments;
+    if (args != null) {
+      args = args as ScreenArguments;
+      _ticket = args.ticket ?? Ticket();
+      if (args.ticketId != null) {
+        titleOfPage = 'Edit Ticket ModalRoute';
+        _ticket.id = args.ticketId ?? '';
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +73,7 @@ class _AddTicket extends State<AddTicket> with RestorationMixin {
                   children: [
                     Container(
                         child: Text(
-                      'Add New Ticket: ' + args.ticket.id,
+                      titleOfPage + ' ' + _ticket.id,
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 30,
@@ -73,7 +83,7 @@ class _AddTicket extends State<AddTicket> with RestorationMixin {
                     Container(
                       margin: EdgeInsets.fromLTRB(0, 15, 0, 0),
                       child: Text(
-                        'Owner: Owner: ' + args.ticket.owner,
+                        'Owner: ' + _ticket.owner,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
@@ -173,8 +183,8 @@ class _AddTicket extends State<AddTicket> with RestorationMixin {
                       width: 700,
                       child: TextFormField(
                         decoration: InputDecoration(
-                          labelText: args.ticket.name,
-                          hintText: 'Print title',
+                          labelText: _ticket.name,
+                          hintText: 'Title of ticket',
                           labelStyle: TextStyle(
                             fontSize: 16,
                             color: primaryColor,
@@ -192,12 +202,15 @@ class _AddTicket extends State<AddTicket> with RestorationMixin {
                                 BorderSide(color: Colors.black54, width: 2.0),
                           ),
                         ),
+                        onChanged: (title) {
+                          _ticket.name = title;
+                        },
                       ),
                     ),
                     Container(
                       margin: EdgeInsets.fromLTRB(0, 15, 0, 0),
                       child: Text(
-                        args.ticket.body,
+                        _ticket.body,
                         // 'Description:',
                         style: TextStyle(
                           fontSize: 16,
@@ -212,7 +225,8 @@ class _AddTicket extends State<AddTicket> with RestorationMixin {
                           child: TextFormField(
                             maxLines: 6,
                             decoration: InputDecoration(
-                              labelText: 'Description',
+                              // labelText: 'Description1',
+                              labelText: _ticket.body,
                               hintText: 'Description',
                               labelStyle: TextStyle(
                                 fontSize: 16,
@@ -231,41 +245,52 @@ class _AddTicket extends State<AddTicket> with RestorationMixin {
                                     color: Colors.black54, width: 2.0),
                               ),
                             ),
+                            onChanged: (body) {
+                              _ticket.body = body;
+                            },
                           ),
                         )),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             primary: primaryColor,
                             padding: EdgeInsets.fromLTRB(25, 10, 25, 10)),
-                        onPressed: () => {},
+                        onPressed: () {
+                          print('Save Ticket');
+                          model.db.addTicket(_ticket);
+
+                          // Navigator.pop(context);
+                          setState(() {
+                            
+                          });
+                        },
                         child: Text('Sumbit'))
                   ]),
-              Column(
-                children: [
-                  Container(
-                      margin: EdgeInsets.fromLTRB(30, 50, 15, 30),
-                      width: 700,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Documents:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                  primary: primaryColor,
-                                  padding: EdgeInsets.fromLTRB(25, 10, 25, 10)),
-                              onPressed: () => {},
-                              icon: Icon(Icons.add),
-                              label: Text('Add'))
-                        ],
-                      )),
-                ],
-              ),
+              // Column(
+              //   children: [
+              //     Container(
+              //         margin: EdgeInsets.fromLTRB(30, 50, 15, 30),
+              //         width: 700,
+              //         child: Row(
+              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //           children: [
+              //             Text(
+              //               'Documents:',
+              //               style: TextStyle(
+              //                 fontSize: 20,
+              //                 fontWeight: FontWeight.w600,
+              //               ),
+              //             ),
+              //             ElevatedButton.icon(
+              //                 style: ElevatedButton.styleFrom(
+              //                     primary: primaryColor,
+              //                     padding: EdgeInsets.fromLTRB(25, 10, 25, 10)),
+              //                 onPressed: () => {},
+              //                 icon: Icon(Icons.add),
+              //                 label: Text('Add'))
+              //           ],
+              //         )),
+              //   ],
+              // ),
             ],
           ),
         ),

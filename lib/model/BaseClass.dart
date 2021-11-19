@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class BaseClass {
   String id = '';
   String type = '';
@@ -26,4 +28,14 @@ class BaseClass {
     this.status = m.containsKey('status') ? m['status'] : '';
     this.owner = m.containsKey('owner') ? m['owner'] : '';
   }
+
+  void fromJsonQueryDocumentSnapshot(QueryDocumentSnapshot m) {
+    this.id = m['id'] == null ? '' : m['id'];
+    this.type = m['type'] == null ? '' : m['type'];
+    this.date = m['date'] == null ? '' : m['date'];
+    this.tag = m['tag'] == null ? '' : m['tag'];
+    this.name = m['name'] == null ? '' : m['name'];
+    this.status = m['status'] == null ? '' : m['status'];
+    this.owner = m['owner'] == null ? '' : m['owner'];
+  }  
 }

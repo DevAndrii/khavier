@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:admin/constants.dart';
 import 'package:admin/controllers/MenuController.dart';
 import 'package:admin/model/model.dart';
 import 'package:admin/model/ticket.dart';
 import 'package:admin/responsive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -79,11 +82,7 @@ class _TicketsScreenState extends State<TicketsScreen> {
                       Navigator.pushNamed(
                         context,
                         '/addticket',
-                        arguments: ScreenArguments(
-                          'Extract Arguments Screen',
-                          'This message is extracted in the build method.',
-                          ticket,
-                        ),
+                        arguments: ScreenArguments(),
                       );
                     },
                     icon: Icon(Icons.add),
@@ -92,6 +91,11 @@ class _TicketsScreenState extends State<TicketsScreen> {
                 ),
               ],
             ),
+            // SizedBox(
+            //   height: 400, // fixed height
+            //   child: RecentFiles(),
+            // ),
+            // Expanded(child: RecentFiles()),
             // Expanded(child: RecentFiles()),
             Expanded(
               child: getTicketsView(),
@@ -103,6 +107,83 @@ class _TicketsScreenState extends State<TicketsScreen> {
   }
 
   Widget getTicketsView() {
+    DataRow recentTicketDataRow(id, data) {
+      return DataRow(
+          cells: [
+            DataCell(Text(id)),
+            DataCell(Text(data['name'])),
+            DataCell(Text(data['priority'])),
+            DataCell(Text(data['type'])),
+            DataCell(Text(data['date'])),
+          ],
+          onSelectChanged: (isSelected) {
+            if (isSelected!) {
+              print('Ticket id: ' + id);
+              Ticket _ticket = Ticket();
+              _ticket.fromJsonQueryDocumentSnapshot(data);
+              Navigator.pushNamed(
+                context,
+                '/editticket',
+                arguments: ScreenArguments(ticketId: id, ticket: _ticket)
+              );
+            }
+          });
+    }
+
+    return FutureBuilder<QuerySnapshot>(
+      future: model.db.ticketsFB.get(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text("Something went wrong");
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          return SizedBox(
+            width: double.infinity,
+            child: DataTable2(
+              showCheckboxColumn: true,
+              dataRowColor: MaterialStateProperty.all(Colors.green[100]),
+              columnSpacing: defaultPadding,
+              minWidth: 600,
+              columns: [
+                DataColumn(
+                  label: Text("ID"),
+                ),
+                DataColumn(
+                  label: Text("Name"),
+                ),
+                DataColumn(
+                  label: Text("Priority"),
+                ),
+                DataColumn(
+                  label: Text("Type"),
+                ),
+                DataColumn(
+                  label: Text("Date"),
+                ),
+              ],
+              rows: List.generate(
+                snapshot.data!.size,
+                (index) {
+                  return recentTicketDataRow(snapshot.data!.docs[index].id,
+                      snapshot.data!.docs[index]);
+                },
+              ),
+            ),
+          );
+        }
+
+        return Text('Loading');
+        // return CircularProgressIndicator();
+      },
+    );
+  }
+
+  Widget getTicketsView0() {
     ListTile getListTile(data) {
       return ListTile(
         title: Text(data['id']),
@@ -133,12 +214,10 @@ class _TicketsScreenState extends State<TicketsScreen> {
           return Text("Something went wrong");
         }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        }
-
         if (snapshot.connectionState == ConnectionState.done) {
           return ListView(
+            // shrinkWrap: true,
+            // physics: ScrollPhysics(),
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
               Map<String, dynamic> data =
                   document.data()! as Map<String, dynamic>;
@@ -151,16 +230,15 @@ class _TicketsScreenState extends State<TicketsScreen> {
           );
         }
 
-        return Text("loading");
+        return CircularProgressIndicator();
       },
     );
   }
 }
 
 class ScreenArguments {
-  final String title;
-  final String message;
-  Ticket ticket;
+  final String? ticketId;
+  final Ticket? ticket;
 
-  ScreenArguments(this.title, this.message, this.ticket);
+  ScreenArguments({this.ticketId, this.ticket});
 }

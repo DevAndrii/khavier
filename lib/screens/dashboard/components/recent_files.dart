@@ -37,9 +37,6 @@ class RecentFiles extends StatelessWidget {
                 DataColumn(
                   label: Text("ID"),
                 ),
-                // DataColumn(
-                //   label: Text("Name"),
-                // ),
                 DataColumn(
                   label: Text("Priority"),
                 ),
@@ -50,7 +47,6 @@ class RecentFiles extends StatelessWidget {
               rows: List.generate(
                 demoRecentFiles.length,
                 (index) => recentFileDataRow(demoRecentFiles[index]),
-                // (index) { recentTicketDataRow(tickets[index])},
               ),
             ),
           ),
@@ -83,30 +79,3 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
     ],
   );
 }
-
-// DataRow recentTicketDataRow(Ticket ticket) {
-//   return DataRow(
-//     cells: [
-//       // DataCell(
-//       //   Row(
-//       //     children: [
-//       //       SvgPicture.asset(
-//       //         fileInfo.icon!,
-//       //         height: 30,
-//       //         width: 30,
-//       //       ),
-//       //       Padding(
-//       //         padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-//       //         child: Text(fileInfo.title!),
-//       //       ),
-//       //     ],
-//       //   ),
-//       // ),
-//       DataCell(Text(ticket.id)),
-//       DataCell(Text(ticket.name)),
-//       DataCell(Text(ticket.priority)),
-//       DataCell(Text(ticket.type)),
-//       DataCell(Text(ticket.date)),
-//     ],
-//   );
-// }

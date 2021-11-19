@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:admin/constants.dart';
 import 'package:admin/model/api_model.dart';
 import 'package:admin/model/model.dart';
@@ -80,7 +82,8 @@ class _MyAppState extends State<MyApp> {
                 '/myaccount': (context) => MyAccountScreen(),
                 '/login': (context) => model.db.isSigned ? MainScreen() : LoginScreen(),
                 '/singin': (context) => PhoneScreen(),
-                '/addticket': (context) => AddTicket(),
+                '/addticket' : (context) => AddTicket(),
+                '/editticket': (context) => AddTicket(),
               },
               home: MainScreen(),
             ),
