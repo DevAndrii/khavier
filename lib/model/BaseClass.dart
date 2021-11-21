@@ -37,5 +37,5 @@ class BaseClass {
     this.name = m['name'] == null ? '' : m['name'];
     this.status = m['status'] == null ? '' : m['status'];
     this.owner = m['owner'] == null ? '' : m['owner'];
-  }  
+  }
 }

@@ -115,17 +115,27 @@ class _TicketsScreenState extends State<TicketsScreen> {
             DataCell(Text(data['priority'])),
             DataCell(Text(data['type'])),
             DataCell(Text(data['date'])),
+            DataCell(Icon(Icons.edit, color: Colors.blue)),
+            DataCell(Icon(Icons.delete, color: Colors.blue)),
+            DataCell(Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.edit, color: Colors.blue),
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                ),
+                Icon(Icons.delete, color: Colors.blue),
+              ],
+            )),
           ],
           onSelectChanged: (isSelected) {
             if (isSelected!) {
               print('Ticket id: ' + id);
               Ticket _ticket = Ticket();
               _ticket.fromJsonQueryDocumentSnapshot(data);
-              Navigator.pushNamed(
-                context,
-                '/editticket',
-                arguments: ScreenArguments(ticketId: id, ticket: _ticket)
-              );
+              Navigator.pushNamed(context, '/editticket',
+                  arguments: ScreenArguments(ticketId: id, ticket: _ticket));
             }
           });
     }
@@ -165,6 +175,15 @@ class _TicketsScreenState extends State<TicketsScreen> {
                 DataColumn(
                   label: Text("Date"),
                 ),
+                DataColumn(
+                  label: Text("edit"),
+                ),
+                DataColumn(
+                  label: Text("Delete"),
+                ),
+                DataColumn(
+                  label: Text("Test"),
+                ),
               ],
               rows: List.generate(
                 snapshot.data!.size,
@@ -178,7 +197,6 @@ class _TicketsScreenState extends State<TicketsScreen> {
         }
 
         return Text('Loading');
-        // return CircularProgressIndicator();
       },
     );
   }
